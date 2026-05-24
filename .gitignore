@@ -1,0 +1,16 @@
+__pycache__/
+*.pyc
+.venv/
+venv/
+.env
+
+data/sentinel.db
+data/baseline.json
+data/state.json
+data/latest.json
+
+firmware/esp32_touch_controller/secrets.h
+
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>WiFiGhost Sentinel</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Wireless IDS master console</p>
+          <h1>WiFiGhost Sentinel</h1>
+        </div>
+        <div class="header-actions">
+          <span id="modelStatus">Model loading</span>
+          <span id="profileBadge">Profile: lab</span>
+        </div>
+      </header>
+
+      <section class="hero-grid">
+        <article class="panel risk-panel" id="riskPanel">
+          <div class="panel-head">
+            <span>Risk State</span>
+            <strong id="statusText">READY</strong>
+          </div>
+          <div class="risk-layout">
+            <div class="risk-meter">
+              <span id="riskScore">0</span>
+              <small>risk</small>
+            </div>
+            <div>
+              <h2 id="threatText">Waiting for sensor input</h2>
+              <p id="topReason">Start a demo or connect Raspberry Pi / ESP32 sensors.</p>
+              <div class="chip-row">
+                <span id="modeChip">mode: monitor</span>
+                <span id="sensitivityChip">sensitivity: normal</span>
+                <span id="sourceChip">source: system</span>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <article class="panel controls-panel">
+          <div class="panel-head">
+            <span>Controls</span>
+            <strong id="piStatus">Pi: standby</strong>
+          </div>
+          <div class="control-grid">
+            <button data-action="toggle_pause">Pause / Run</button>
+            <button data-action="learn_current">Learn Baseline</button>
+            <button data-action="cycle_page">TFT Page</button>
+            <button data-action="clear_events">Clear Events</button>
+          </div>
+          <div class="select-row">
+            <label>
+              Mode
+              <select id="modeSelect">
+                <option value="monitor">monitor</option>
+                <option value="learning">learning</option>
+                <option value="paused">paused</option>
+              </select>
+            </label>
+            <label>
+              Sensitivity
+              <select id="sensitivitySelect">
+                <option value="low">low</option>
+                <option value="normal">normal</option>
+                <option value="high">high</option>
+              </select>
+            </label>
+          </div>
+        </article>
+      </section>
+
+      <section class="panel demo-panel">
+        <div class="panel-head">
+          <span>Safe Demo Triggers</span>
+          <strong>defensive simulation</strong>
+        </div>
+        <div class="demo-buttons">
+          <button data-demo="seed">Seed baseline</button>
+          <button data-demo="normal">Normal</button>
+          <button data-demo="evil_twin" class="warn">Evil twin</button>
+          <button data-demo="deauth" class="warn">Deauth burst</button>
+          <button data-demo="privacy" class="warn">Probe privacy</button>
+          <button data-demo="mixed" class="danger">Mixed attack</button>
+        </div>
+      </section>
+
+      <section class="info-grid">
+        <article class="panel">
+          <div class="panel-head">
+            <span>Why Risk Is Showing</span>
+            <strong id="reasonCount">0 reasons</strong>
+          </div>
+          <div class="reason-list" id="reasonList"></div>
+        </article>
+
+        <article class="panel">
+          <div class="panel-head">
+            <span>Feature Evidence</span>
+            <strong id="baselineSummary">0 AP baseline</strong>
+          </div>
+          <div class="metric-grid" id="metricGrid"></div>
+        </article>
+      </section>
+
+      <section class="info-grid lower">
+        <article class="panel table-panel">
+          <div class="panel-head">
+            <span>Access Points</span>
+            <strong id="apCount">0 APs</strong>
+          </div>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>SSID</th>
+                  <th>BSSID</th>
+                  <th>RSSI</th>
+                  <th>CH</th>
+                  <th>Security</th>
+                </tr>
+              </thead>
+              <tbody id="apRows"></tbody>
+            </table>
+          </div>
+        </article>
+
+        <article class="panel table-panel">
+          <div class="panel-head">
+            <span>Event Timeline</span>
+            <strong id="eventCount">0 events</strong>
+          </div>
+          <div id="timeline" class="timeline"></div>
+        </article>
+      </section>
+    </main>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+  </body>
+</html>

@@ -156,7 +156,25 @@ void connectWiFi() {
     tft.print(".");
     attempts++;
   }
-  drawScreen();
+  if (WiFi.status() == WL_CONNECTED) {
+    header("Wi-Fi connected");
+    tft.setTextColor(ILI9341_WHITE);
+    tft.setTextSize(1);
+    tft.setCursor(10, 62);
+    tft.print("SSID: ");
+    tft.print(WIFI_SSID);
+    tft.setCursor(10, 82);
+    tft.print("ESP32 IP: ");
+    tft.print(WiFi.localIP());
+    delay(1200);
+    drawScreen();
+  } else {
+    statusText = "NO WIFI";
+    riskScore = 0;
+    threatText = "Wi-Fi failed";
+    reasonText = "Check SSID/password and hotspot";
+    drawScreen();
+  }
 }
 
 void fetchState() {
@@ -174,8 +192,13 @@ void fetchState() {
     statusText = "OFFLINE";
     riskScore = 0;
     threatText = "Backend offline";
-    reasonText = "Check API IP and port 5000";
+    reasonText = "Check laptop IP and port 5000";
     drawScreen();
+    tft.setTextColor(ILI9341_YELLOW);
+    tft.setTextSize(1);
+    tft.setCursor(12, 148);
+    tft.print("API: ");
+    tft.print(String(API_STATE_URL).substring(7, 29));
     return;
   }
 

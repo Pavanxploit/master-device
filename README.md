@@ -43,49 +43,97 @@ cd "C:\Users\jeeva\Documents\New project\master-device"
 python -m venv .venv
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-python scripts\train_model.py
 python backend\app.py
 ```
 
-Open:
-
+Open dashboard:
 ```text
 http://127.0.0.1:5000
 ```
 
-Use dashboard buttons:
+### When You Change Wi-Fi / Mobile Hotspot
 
-1. `Seed baseline`
-2. `Normal`
-3. `Evil twin`
-4. `Deauth burst`
-5. `Probe privacy`
-6. `Mixed attack`
+The backend port stays `5000`, but the laptop IP changes. Regenerate the ESP32 config before uploading:
 
-## Raspberry Pi collector
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\configure_esp32.ps1 -Ssid "YOUR_HOTSPOT_NAME" -Password "YOUR_HOTSPOT_PASSWORD"
+powershell -ExecutionPolicy Bypass -File scripts\start_backend.ps1
+```
 
-Safe simulation mode:
+See [docs/mobile_hotspot_runbook.md](docs/mobile_hotspot_runbook.md) for the full college/mobile-hotspot checklist.
+
+### Mode 1: DEMO Mode (Testing)
+
+Use dashboard buttons or send demo attacks:
+
+```bash
+python scripts\send_demo.py normal
+python scripts\send_demo.py evil_twin
+python scripts\send_demo.py deauth
+python scripts\send_demo.py privacy
+python scripts\send_demo.py mixed
+```
+
+### Mode 2: REAL-WORLD WiFi Analysis (Production)
+
+**NEW**: Analyze actual WiFi networks instead of demos!
+
+#### Quick Start (Recommended)
+```bash
+# Continuous real WiFi scanning
+python scripts\real_wifi_sniffer.py --loop --interval 30
+```
+
+#### Interactive Menu
+```bash
+# Choose between real-world and demo modes
+python launcher.py
+```
+
+#### Learn from Your Environment
+```bash
+# Learn what's normal in your location
+python scripts\real_wifi_sniffer.py --learn --device-id "office-trusted"
+```
+
+#### Full Documentation
+See [REAL_WORLD_QUICKSTART.md](REAL_WORLD_QUICKSTART.md) for:
+- Real WiFi scanning setup
+- Raspberry Pi monitor-mode configuration
+- Model training on real data
+- Production deployment guide
+
+## Raspberry Pi Real-World Collection
+
+### Real WiFi Packet Capture (Advanced)
+
+Set up monitor mode on Raspberry Pi:
+
+```bash
+sudo apt-get install airmon-ng scapy
+sudo airmon-ng start wlan1
+
+# Real packet sniffing
+sudo python3 pi_sensor/real_wifi_collector.py --interface wlan1mon --loop --verbose
+
+# Stop monitor mode
+sudo airmon-ng stop wlan1mon
+```
+
+### Demo/Simulation Mode (Quick Testing)
 
 ```bash
 python3 pi_sensor/monitor_collector.py --url http://LAPTOP_IP:5000/api/pi/window --simulate mixed --loop
 ```
 
-Real monitor-mode mode:
+### Real Network Scanning (Windows/Linux Desktop)
 
 ```bash
-sudo ip link set wlan1 down
-sudo iw dev wlan1 set type monitor
-sudo ip link set wlan1 up
-python3 pi_sensor/monitor_collector.py --iface wlan1 --url http://LAPTOP_IP:5000/api/pi/window --loop
+python scripts/real_wifi_sniffer.py --loop --interval 30
 ```
 
-If your adapter creates `wlan1mon`, use:
-
-```bash
-python3 pi_sensor/monitor_collector.py --iface wlan1mon --url http://LAPTOP_IP:5000/api/pi/window --loop
-```
-
-This collector is passive. It does not inject packets and does not perform attacks.
+Both collectors send real data to the backend for actual threat analysis.
+See [docs/real_world_deployment.md](docs/real_world_deployment.md) for complete setup guide.
 
 ## ESP32 TFT touch firmware
 
@@ -113,7 +161,13 @@ to:
 firmware/esp32_touch_controller/secrets.h
 ```
 
-Edit Wi-Fi and API IP.
+Or use the helper script:
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts\configure_esp32.ps1 -Ssid "YOUR_HOTSPOT_NAME" -Password "YOUR_HOTSPOT_PASSWORD"
+```
+
+`secrets.h` is local-only and ignored by Git, so your hotspot password is not pushed.
 
 ## Main TFT wiring
 

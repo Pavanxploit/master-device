@@ -32,6 +32,16 @@ String modeText = "monitor";
 String sensitivityText = "normal";
 int riskScore = 0;
 
+String apiHost() {
+  String url = String(API_STATE_URL);
+  url.replace("http://", "");
+  int slash = url.indexOf("/");
+  if (slash > 0) {
+    url = url.substring(0, slash);
+  }
+  return url;
+}
+
 String extractJsonString(const String& json, const String& key, const String& fallback) {
   String searchKey = String("\"") + key + "\"";
   int keyIndex = json.indexOf(searchKey);
@@ -135,7 +145,10 @@ void drawDetails() {
   tft.print(sensitivityText);
   tft.setTextSize(1);
   tft.setCursor(12, 154);
-  tft.print("Use dashboard for full evidence table.");
+  tft.print("API: ");
+  tft.print(apiHost());
+  tft.setCursor(12, 170);
+  tft.print("Dashboard has full evidence table.");
   button(10, 180, 92, 42, "Page", ILI9341_CYAN);
   button(112, 180, 92, 42, "Pause", ILI9341_ORANGE);
   button(214, 180, 96, 42, "Learn", ILI9341_GREEN);
@@ -166,6 +179,9 @@ void connectWiFi() {
     tft.setCursor(10, 82);
     tft.print("ESP32 IP: ");
     tft.print(WiFi.localIP());
+    tft.setCursor(10, 102);
+    tft.print("Backend: ");
+    tft.print(apiHost());
     delay(1200);
     drawScreen();
   } else {
@@ -198,7 +214,7 @@ void fetchState() {
     tft.setTextSize(1);
     tft.setCursor(12, 148);
     tft.print("API: ");
-    tft.print(String(API_STATE_URL).substring(7, 29));
+    tft.print(apiHost());
     return;
   }
 
